@@ -68,10 +68,8 @@ void *mandlebrotThread(void *in)
 	unsigned int x;
 	unsigned int y;
 
-	unsigned int p = cn->yRes / 10;
 	for(i = info->iStart, y = info->yStart; y < info->yEnd; i+=cn->iStep, y++)
 	{
-		//if(y % p == 0)	printf("%d%%\n", (int)(y / (float)cn->yRes * 100));
 		for(r = info->rStart, x = info->xStart; x < info->xEnd; r+=cn->rStep, x++)
 		{
 			unsigned int o = mandlebrot(r, i, cn->maxSteps);
@@ -81,6 +79,8 @@ void *mandlebrotThread(void *in)
 				memcpy(cn->data + (cn->xRes * y * 3) + x * 3, cn->colors + (o%cn->colorCount + 1) * 3, 3);
 		}
 	}
+
+  return NULL;
 }
 
 int main(int argc, char **argv)

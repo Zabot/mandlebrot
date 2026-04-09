@@ -9,6 +9,10 @@
       pkgs = import nixpkgs { inherit system; };
     in {
       packages.x86_64-linux = {
+        default = pkgs.stdenv.mkDerivation {
+          name = "mandlebrot";
+          src = ./.;
+        };
       };
 
       devShells.x86_64-linux.default = pkgs.mkShell {
