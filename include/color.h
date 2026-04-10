@@ -12,6 +12,7 @@ typedef struct {
   size_t len;
 } Gradient;
 
-void color(int xRes, int yRes, unsigned short *data, Color *image);
+void color(Color *image, int xRes, int yRes, const unsigned short *data,
+           const Gradient *gradient);
 
 #endif

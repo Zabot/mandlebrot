@@ -17,12 +17,6 @@ Color interpolate(const Gradient *gradient, unsigned short x,
   float fx = scale * log(x);
   float frange = fmax - fmin;
 
-  /*unsigned short range = (max - min);*/
-  /*float f = (float) (x - min) / ((float) range);*/
-  /*unsigned short stop = ((unsigned short)(f * ((repeat * gradient->len) -
-   * 1)));*/
-  /*float f2 = (f * (repeat * gradient->len - 1)) - (float)stop;*/
-
   float f = (fx - fmin) / frange;
   unsigned short stop = ((unsigned short)(f * ((repeat * gradient->len) - 1)));
   float f2 = (f * (repeat * gradient->len - 1)) - (float)stop;
@@ -38,55 +32,14 @@ Color interpolate(const Gradient *gradient, unsigned short x,
   };
   float d = (float)bayer[px % 4][py % 4] / 16.0;
 
-  /*Color c = {*/
-  /*(unsigned short)(r->r - l->r) * f2 + l->r,*/
-  /*(unsigned short)(r->g - l->g) * f2 + l->g,*/
-  /*(unsigned short)(r->b - l->b) * f2 + l->b,*/
-  /*};*/
-  /*return c;*/
-
   if (f2 > d) {
     return *r;
   }
   return *l;
 }
 
-void color(int xRes, int yRes, unsigned short *data, Color *image) {
-  int gradientStopsLen = 3;
-  Color gradientStops[] = {
-      /*{0,0,0},*/
-      /*{255,255,255},*/
-      /*{255,0,0},*/
-      /*{255,255,0},*/
-      /*{0,255,0},*/
-      /*{0,255,255},*/
-      /*{255,255,255},*/
-      {0, 43, 54},
-      {7, 54, 66},
-      {88, 110, 117},
-      /*{101,123,131},*/
-      /*{131,	148,	150},*/
-      /*{147,	161,	161},*/
-      /*{238,	232,	213},*/
-      /*{253,	246,	227},*/
-      /*{181,	137,	0},*/
-      /*{203,	75 ,22},*/
-      /*{220,	50 ,47},*/
-      /*{211,	54 ,130},*/
-      /*{108,	113,	196},*/
-      /*{38 ,139 ,210},*/
-      /*{42 ,161 ,152},*/
-      /*{133,	153,	0},*/
-      /*{0,255,0},*/
-      /*{0,255,255},*/
-      /*{0,0,255},*/
-      /*{255,255,255},*/
-  };
-  const Gradient gradient = {
-      gradientStops,
-      gradientStopsLen,
-  };
-
+void color(Color *image, int xRes, int yRes, const unsigned short *data,
+           const Gradient *gradient) {
   unsigned short min = USHRT_MAX;
   unsigned short max = 0;
 
@@ -99,7 +52,7 @@ void color(int xRes, int yRes, unsigned short *data, Color *image) {
   for (int x = 0; x < xRes; x++) {
     for (int y = 0; y < yRes; y++) {
       const unsigned short o = data[xRes * y + x];
-      const Color color = interpolate(&gradient, o, min, max, x, y);
+      const Color color = interpolate(gradient, o, min, max, x, y);
       memcpy(image + (xRes * y) + x, &color, sizeof(Color));
     }
   }

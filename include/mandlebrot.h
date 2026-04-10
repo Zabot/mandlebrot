@@ -3,6 +3,8 @@
 
 #include <complex.h>
 
+#include "color.h"
+
 typedef struct {
   unsigned int steps;
   long double zoom;
@@ -13,6 +15,8 @@ typedef struct {
 
   char *outfile;
   unsigned char threads;
+
+  Gradient gradient;
 } MandlebrotParams;
 
 void render(const MandlebrotParams *params);

@@ -105,8 +105,7 @@ void render(const MandlebrotParams *params) {
   }
 
   Color *image = malloc(params->x_res * params->y_res * sizeof(Color));
-  color(params->x_res, params->y_res, buffer, image);
-
+  color(image, params->x_res, params->y_res, buffer, &params->gradient);
 
   FILE *fp = fopen(params->outfile, "wb");
   fprintf(fp, "P6\n%d %d\n255\n", params->x_res, params->y_res);

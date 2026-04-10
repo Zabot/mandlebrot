@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "color.h"
 #include "mandlebrot.h"
 
 const char *argp_program_version = "mandlebrot 0.1";
@@ -18,6 +19,7 @@ static struct argp_option options[] = {
 
     {"width", 'w', "PIXELS", 0, "Width of output image"},
     {"height", 'h', "PIXELS", 0, "Height of output image"},
+    {"graident", 'g', "#FFFFFF", 0, "Add a gradient stop"},
 
     {"output", 'o', "FILE", 0, "Output image"},
     {"threads", 'j', "THREADS", 0,
@@ -58,6 +60,17 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     params->threads = atoi(arg);
     break;
 
+  case 'g':
+    unsigned int rgb = strtoul(arg, NULL, 16);
+
+    params->gradient.stops[params->gradient.len] = (Color){
+        .r = (rgb >> 16) & 0xFF,
+        .g = (rgb >> 8) & 0xFF,
+        .b = rgb & 0xFF,
+    };
+    params->gradient.len += 1;
+    break;
+
   default:
     return ARGP_ERR_UNKNOWN;
   }
@@ -67,6 +80,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 static struct argp argp = {options, parse_opt, args_doc, doc};
 
 int main(int argc, char **argv) {
+  Color stops[32];
   MandlebrotParams params = {
       .steps = 5000,
       .zoom = 59979000000.0,
@@ -75,12 +89,23 @@ int main(int argc, char **argv) {
       .y_res = 800,
       .outfile = "mandlebrot.ppm",
       .threads = 0,
+      .gradient =
+          {
+              .len = 0,
+              .stops = stops,
+          },
   };
 
   argp_parse(&argp, argc, argv, 0, 0, &params);
 
   if (params.threads == 0) {
     params.threads = 2 * sysconf(_SC_NPROCESSORS_ONLN);
+  }
+
+  if (params.gradient.len == 0) {
+    params.gradient.len = 2;
+    stops[0] = (Color){0, 0, 0};
+    stops[1] = (Color){255, 255, 255};
   }
 
   render(&params);
