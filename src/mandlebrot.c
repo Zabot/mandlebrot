@@ -6,27 +6,9 @@
 #include <string.h>
 
 #include "color.h"
+#include "mandlebrot.h"
 
 int mandlebrot(long double complex c, size_t maxSteps) {
-  long double real = creall(c);
-  long double imag = cimagl(c);
-  long double zr = 0;
-  long double zi = 0;
-
-  for (size_t counter = 0; counter < maxSteps; counter++) {
-    if (sqrt(zr * zr + zi * zi) >= 2) {
-      return counter;
-    }
-
-    long double t = ((zr * zr) - (zi * zi)) + real;
-    zi = (2 * zr * zi) + imag;
-    zr = t;
-  }
-
-  return maxSteps;
-}
-
-int mandlebrot_simple(long double complex c, size_t maxSteps) {
   long double complex z = 0.0;
 
   for (size_t counter = 0; counter < maxSteps; counter++) {
@@ -67,25 +49,12 @@ void *mandlebrotThread(void *in) {
     long double complex c = info->cStart + y * info->cn->iStep * I;
     for (unsigned int x = 0; x < info->xRange; x++) {
       c += info->cn->rStep;
-      info->buffer[info->xRange * y + x] =
-          mandlebrot_simple(c, info->cn->maxSteps);
+      info->buffer[info->xRange * y + x] = mandlebrot(c, info->cn->maxSteps);
     }
   }
 
   return NULL;
 }
-
-typedef struct {
-  unsigned int steps;
-  long double zoom;
-  long double complex center;
-
-  unsigned int x_res;
-  unsigned int y_res;
-
-  char *outfile;
-  unsigned char threads;
-} MandlebrotParams;
 
 void render(const MandlebrotParams *params) {
   const long double rCenter = creall(params->center);
@@ -138,8 +107,6 @@ void render(const MandlebrotParams *params) {
   Color *image = malloc(params->x_res * params->y_res * sizeof(Color));
   color(params->x_res, params->y_res, buffer, image);
 
-  // Write the bitmap
-  printf("Writing %s...\n", params->outfile);
 
   FILE *fp = fopen(params->outfile, "wb");
   fprintf(fp, "P6\n%d %d\n255\n", params->x_res, params->y_res);
@@ -148,20 +115,4 @@ void render(const MandlebrotParams *params) {
 
   free(image);
   free(buffer);
-
-  printf("Done\n");
-}
-
-int main(int argc, char **argv) {
-  MandlebrotParams params = {
-      .steps = 5000,
-      .zoom = 59979000000.0,
-      .center = -.743643887037151 + 0.131825904205330 * I,
-      .x_res = 2880,
-      .y_res = 1920,
-      .outfile = "mandlebrot.ppm",
-      .threads = 16,
-  };
-
-  render(&params);
 }

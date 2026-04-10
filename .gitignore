@@ -1,6 +1,6 @@
-.direnv
 mandlebrot
-
 *.o
-result
 *.ppm
+
+.direnv
+result
