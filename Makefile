@@ -1,9 +1,9 @@
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=-Wall -I include -O3
 LDFLAGS=-lm -lpthread
 
-SRCS    = mandlebrot.c
-OBJS    = $(SRCS:.c=.o)
+SRCS = src/mandlebrot.c src/color.c
+OBJS = $(SRCS:.c=.o)
 
 all: mandlebrot
 
