@@ -23,9 +23,9 @@ Color interpolate(const Gradient *gradient, double f, int px, int py) {
 
   if (!gradient->dither) {
     return (Color){
-      .r = (r->r - l->r) * f2 + l->r,
-      .g = (r->g - l->g) * f2 + l->g,
-      .b = (r->b - l->b) * f2 + l->b,
+        .r = (r->r - l->r) * f2 + l->r,
+        .g = (r->g - l->g) * f2 + l->g,
+        .b = (r->b - l->b) * f2 + l->b,
     };
   }
 
@@ -57,8 +57,8 @@ void color(Color *image, int xRes, int yRes, const unsigned short *data,
 
   int cum = 0;
   for (int i = 0; i < maxSteps; i++) {
-      cum += histogram[i];
-      histogram[i] = cum;
+    cum += histogram[i];
+    histogram[i] = cum;
   }
 
   for (int y = 0; y < yRes; y++) {

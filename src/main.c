@@ -1,9 +1,8 @@
 #include <argp.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 #include "color.h"
-#include "mandlebrot.h"
+#include "fractal.h"
 
 const char *argp_program_version = "mandlebrot 0.1";
 const char *argp_program_bug_address = "<zach@zabot.dev>";
@@ -20,16 +19,15 @@ static struct argp_option options[] = {
     {"width", 'w', "PIXELS", 0, "Width of output image"},
     {"height", 'h', "PIXELS", 0, "Height of output image"},
     {"graident", 'g', "#FFFFFF", 0, "Add a gradient stop"},
-    {"dither", 'd', 0, 0, "Dither instead of interpolate between gradient stops"},
+    {"dither", 'd', 0, 0,
+     "Dither instead of interpolate between gradient stops"},
 
     {"output", 'o', "FILE", 0, "Output image"},
-    {"threads", 'j', "THREADS", 0,
-     "How many threads to use, 0 uses 2 * number of cores"},
 
     {0}};
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
-  MandlebrotParams *params = state->input;
+  FractalParams *params = state->input;
 
   switch (key) {
   case 's':
@@ -57,9 +55,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
   case 'o':
     params->outfile = arg;
     break;
-  case 'j':
-    params->threads = atoi(arg);
-    break;
 
   case 'd':
     params->gradient.dither = true;
@@ -86,14 +81,13 @@ static struct argp argp = {options, parse_opt, args_doc, doc};
 
 int main(int argc, char **argv) {
   Color stops[32];
-  MandlebrotParams params = {
+  FractalParams params = {
       .steps = 1000,
       .zoom = 59979000000.0,
       .center = -.743643887037151 + 0.131825904205330 * I,
       .x_res = 800,
       .y_res = 800,
       .outfile = "mandlebrot.ppm",
-      .threads = 0,
       .gradient =
           {
               .len = 0,
@@ -102,10 +96,6 @@ int main(int argc, char **argv) {
   };
 
   argp_parse(&argp, argc, argv, 0, 0, &params);
-
-  if (params.threads == 0) {
-    params.threads = 2 * sysconf(_SC_NPROCESSORS_ONLN);
-  }
 
   if (params.gradient.len == 0) {
     params.gradient.len = 2;

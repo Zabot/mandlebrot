@@ -17,10 +17,12 @@
 
       devShells.x86_64-linux.default = pkgs.mkShell {
         buildInputs = with pkgs; [
-          pkgs.gdb
-          pkgs.ccls
-          pkgs.clang-tools
-          pkgs.qiv
+          gdb
+          ccls
+          clang-tools
+          qiv
+          opencl-headers
+          rocmPackages.clr
         ];
       };
     };
