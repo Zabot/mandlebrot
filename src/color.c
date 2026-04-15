@@ -7,22 +7,27 @@
 
 #include "color.h"
 
-Color interpolate(const Gradient *gradient, unsigned short x,
-                  unsigned short min, unsigned short max, int px, int py) {
-  const int repeat = 3;
-  const float scale = 1.0;
+Color interpolate(const Gradient *gradient, double f, int px, int py) {
+  f = f * (gradient->len - 1);
 
-  float fmax = scale * log(max);
-  float fmin = scale * log(min);
-  float fx = scale * log(x);
-  float frange = fmax - fmin;
+  size_t stop = (size_t)floor(f);
+  double f2 = f - stop;
 
-  float f = (fx - fmin) / frange;
-  unsigned short stop = ((unsigned short)(f * ((repeat * gradient->len) - 1)));
-  float f2 = (f * (repeat * gradient->len - 1)) - (float)stop;
+  Color *l = &gradient->stops[stop];
 
-  Color *l = &gradient->stops[stop % gradient->len];
-  Color *r = &gradient->stops[(stop + 1) % gradient->len];
+  if (stop == gradient->len - 1) {
+    return *l;
+  }
+
+  Color *r = &gradient->stops[(stop + 1)];
+
+  if (!gradient->dither) {
+    return (Color){
+      .r = (r->r - l->r) * f2 + l->r,
+      .g = (r->g - l->g) * f2 + l->g,
+      .b = (r->b - l->b) * f2 + l->b,
+    };
+  }
 
   unsigned char bayer[4][4] = {
       {0, 8, 2, 10},
@@ -39,20 +44,29 @@ Color interpolate(const Gradient *gradient, unsigned short x,
 }
 
 void color(Color *image, int xRes, int yRes, const unsigned short *data,
-           const Gradient *gradient) {
-  unsigned short min = USHRT_MAX;
-  unsigned short max = 0;
+           const Gradient *gradient, int maxSteps) {
+  /*unsigned short min = USHRT_MAX;*/
+  /*unsigned short max = 0;*/
 
+  int *histogram = calloc(maxSteps, sizeof(int));
+  int total = 0;
   for (int i = 0; i < xRes * yRes; i++) {
-    unsigned short value = data[i];
-    min = MIN(min, value);
-    max = MAX(max, value);
+    histogram[data[i]]++;
+    total++;
   }
 
-  for (int x = 0; x < xRes; x++) {
-    for (int y = 0; y < yRes; y++) {
-      const unsigned short o = data[xRes * y + x];
-      const Color color = interpolate(gradient, o, min, max, x, y);
+  int cum = 0;
+  for (int i = 0; i < maxSteps; i++) {
+      cum += histogram[i];
+      histogram[i] = cum;
+  }
+
+  for (int y = 0; y < yRes; y++) {
+    for (int x = 0; x < xRes; x++) {
+      const unsigned short steps = data[xRes * y + x];
+      const double n = (double)histogram[steps] / (double)(xRes * yRes);
+      const Color color = interpolate(gradient, n, x, y);
+
       memcpy(image + (xRes * y) + x, &color, sizeof(Color));
     }
   }

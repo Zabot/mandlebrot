@@ -10,9 +10,10 @@ typedef struct __attribute__((packed)) {
 typedef struct {
   Color *stops;
   size_t len;
+  bool dither;
 } Gradient;
 
 void color(Color *image, int xRes, int yRes, const unsigned short *data,
-           const Gradient *gradient);
+           const Gradient *gradient, int maxSteps);
 
 #endif

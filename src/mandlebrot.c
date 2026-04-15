@@ -100,12 +100,12 @@ void render(const MandlebrotParams *params) {
     pthread_create(&ids[t], NULL, &mandlebrotThread, &infos[t]);
   }
 
-  for (unsigned char t = 0; t < params->threads - 1; t++) {
+  for (unsigned char t = 0; t < params->threads; t++) {
     pthread_join(ids[t], NULL);
   }
 
   Color *image = malloc(params->x_res * params->y_res * sizeof(Color));
-  color(image, params->x_res, params->y_res, buffer, &params->gradient);
+  color(image, params->x_res, params->y_res, buffer, &params->gradient, params->steps);
 
   FILE *fp = fopen(params->outfile, "wb");
   fprintf(fp, "P6\n%d %d\n255\n", params->x_res, params->y_res);

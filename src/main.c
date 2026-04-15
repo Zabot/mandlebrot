@@ -20,6 +20,7 @@ static struct argp_option options[] = {
     {"width", 'w', "PIXELS", 0, "Width of output image"},
     {"height", 'h', "PIXELS", 0, "Height of output image"},
     {"graident", 'g', "#FFFFFF", 0, "Add a gradient stop"},
+    {"dither", 'd', 0, 0, "Dither instead of interpolate between gradient stops"},
 
     {"output", 'o', "FILE", 0, "Output image"},
     {"threads", 'j', "THREADS", 0,
@@ -60,6 +61,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     params->threads = atoi(arg);
     break;
 
+  case 'd':
+    params->gradient.dither = true;
+    break;
+
   case 'g':
     unsigned int rgb = strtoul(arg, NULL, 16);
 
@@ -82,7 +87,7 @@ static struct argp argp = {options, parse_opt, args_doc, doc};
 int main(int argc, char **argv) {
   Color stops[32];
   MandlebrotParams params = {
-      .steps = 5000,
+      .steps = 1000,
       .zoom = 59979000000.0,
       .center = -.743643887037151 + 0.131825904205330 * I,
       .x_res = 800,
