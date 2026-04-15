@@ -20,7 +20,7 @@ int execFractal(const FractalBounds *bounds, unsigned short *buffer) {
   return 0;
 }
 
-#ifndef HAVE_OPENMP
+#ifndef HAVE_PTHREAD
 int exec(const FractalBounds *bounds, unsigned short *buffer) {
   return execFractal(bounds, buffer);
 }

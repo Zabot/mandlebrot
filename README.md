@@ -25,5 +25,7 @@ Generates escape time fractals to use as wallpapers. Using OpenCL is supported
 # Compiliation
 ```
 nix develop
-make [BACKEND=openmp|opencl|cpu]
+autoreconf -i
+./configure [--disable-opencl] [--disable-pthread]
+make
 ```

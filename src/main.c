@@ -4,8 +4,8 @@
 #include "color.h"
 #include "fractal.h"
 
-const char *argp_program_version = "mandlebrot 0.1";
-const char *argp_program_bug_address = "<zach@zabot.dev>";
+const char *argp_program_version = PACKAGE_STRING;
+const char *argp_program_bug_address = PACKAGE_URL;
 
 static char doc[] = "generate mandlebrot sets";
 static char args_doc[] = "";

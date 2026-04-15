@@ -12,19 +12,29 @@
         default = pkgs.stdenv.mkDerivation {
           name = "mandlebrot";
           src = ./.;
-        };
-      };
 
-      devShells.x86_64-linux.default = pkgs.mkShell {
         buildInputs = with pkgs; [
-          gdb
-          ccls
-          clang-tools
-          qiv
+          pkgs.autoreconfHook
           opencl-headers
           rocmPackages.clr
-          imagemagick
         ];
       };
     };
+
+    devShells.x86_64-linux.default = pkgs.mkShell {
+      buildInputs = with pkgs; [
+        autoconf
+        autoconf-archive
+        automake
+        autogen
+        gdb
+        ccls
+        clang-tools
+        qiv
+        opencl-headers
+        rocmPackages.clr
+        imagemagick
+      ];
+    };
+  };
 }
