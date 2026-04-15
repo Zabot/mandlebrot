@@ -23,6 +23,7 @@
           qiv
           opencl-headers
           rocmPackages.clr
+          imagemagick
         ];
       };
     };
