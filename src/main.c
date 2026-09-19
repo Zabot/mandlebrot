@@ -103,7 +103,9 @@ int main(int argc, char **argv) {
     stops[1] = (Color){255, 255, 255};
   }
 
-  render(&params);
-
-  return 0;
+  int err = render(&params);
+  if (err != 0) {
+	  fprintf(stderr, "render failed(%d)\n", err);
+  }
+  return err;
 }

@@ -1,5 +1,7 @@
 #include "fractal.h"
 
+#include <stdio.h>
+
 #include "fractals/mandlebrot.h"
 
 int execFractal(const FractalBounds *bounds, unsigned short *buffer) {
@@ -22,6 +24,7 @@ int execFractal(const FractalBounds *bounds, unsigned short *buffer) {
 
 #ifndef HAVE_PTHREAD
 int exec(const FractalBounds *bounds, unsigned short *buffer) {
+  printf("using cpu backend\n");
   return execFractal(bounds, buffer);
 }
 #else
@@ -41,6 +44,7 @@ void *mandlebrotThread(void *in) {
 }
 
 int exec(const FractalBounds *bounds, unsigned short *buffer) {
+  printf("using pthread backend\n");
   const size_t threads = 2 * sysconf(_SC_NPROCESSORS_ONLN);
 
   // Can't put infos on the stack inside of the for loop because they

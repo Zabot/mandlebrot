@@ -32,7 +32,7 @@ typedef struct {
   unsigned short max_iters;
 } FractalBounds;
 
-void render(const FractalParams *params);
+int render(const FractalParams *params);
 
 int exec(const FractalBounds *bounds, unsigned short *buffer);
 

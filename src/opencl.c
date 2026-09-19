@@ -25,6 +25,8 @@ const char *kernels[] = {
   }
 
 int exec(const FractalBounds *bounds, unsigned short *buffer) {
+  printf("using opencl backend\n");
+
   cl_int err;
   cl_platform_id platform;
   err = clGetPlatformIDs(1, &platform, NULL);

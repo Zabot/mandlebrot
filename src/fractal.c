@@ -7,7 +7,7 @@
 
 #include "fractal.h"
 
-void render(const FractalParams *params) {
+int render(const FractalParams *params) {
   const double r_center = creall(params->center);
   const double i_center = cimagl(params->center);
 
@@ -30,7 +30,10 @@ void render(const FractalParams *params) {
 
   unsigned short *buffer =
       malloc(params->x_res * params->y_res * sizeof(unsigned short));
-  exec(&bounds, buffer);
+  int err = exec(&bounds, buffer);
+  if (err != 0) {
+	  return err;
+  }
 
   Color *image = malloc(params->x_res * params->y_res * sizeof(Color));
   color(image, params->x_res, params->y_res, buffer, &params->gradient,
@@ -44,4 +47,6 @@ void render(const FractalParams *params) {
   fclose(fp);
 
   free(image);
+
+  return 0;
 }

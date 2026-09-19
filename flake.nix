@@ -18,6 +18,10 @@
           opencl-headers
           rocmPackages.clr
         ];
+
+        configureFlags = [
+          "--disable-opencl"
+        ];
       };
     };
 
